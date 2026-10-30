@@ -53,12 +53,8 @@ class _PageViewUserState extends State<PageViewUser>{
 
           // 2. CEK JIKA ADA ERROR
           else if (snapshot.hasError) {
-
             debugPrint ('Terjadi Error: ${snapshot.error}');
-
             return Center(child: Text('Terjadi Error: ${snapshot.error}'));
-
-
           }
 
           // 3. CEK JIKA DATA KOSONG ATAU NULL
@@ -67,7 +63,6 @@ class _PageViewUserState extends State<PageViewUser>{
           }
 
           final users = snapshot.data!;
-
           return ListView.builder(
               itemCount: users.length,
               itemBuilder: (context, index){
