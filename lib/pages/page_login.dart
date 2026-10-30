@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'page_dashboard.dart';
 
 class PageLogin  extends StatelessWidget{
@@ -10,6 +11,9 @@ class PageLogin  extends StatelessWidget{
 
     final TextEditingController TxtUsername = TextEditingController();
     final TextEditingController TxtPassword = TextEditingController();
+
+    TxtUsername.text = "nopi@gmail.com";
+    TxtPassword.text = "anjayyyy";
 
     // 2. Fungsi sederhana untuk hit API Login
     Future<void> prosesLogin() async {
@@ -28,6 +32,14 @@ class PageLogin  extends StatelessWidget{
         if (!context.mounted) return;
 
         if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString("token", data['data']['token']);
+          await prefs.setString("nama", data['data']['name']);
+
+          // debugPrint(data['data']['name']);
+
           // Jika login sukses, pindah ke dashboard
           Navigator.pushReplacement(
             context,
