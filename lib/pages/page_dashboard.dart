@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'page_input.dart';
+import 'page_view_user.dart';
 
 class PageDashboard extends StatelessWidget {
   const PageDashboard({super.key});
@@ -21,7 +22,10 @@ class PageDashboard extends StatelessWidget {
               spacing: 10,
               runSpacing: 10,
               children: [
-                ElevatedButton(onPressed: () {}, child: const Text('lihat Data')),
+                ElevatedButton(onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => const PageViewUser()));
+                }, child: const Text('lihat Data')),
 
                 SizedBox (width: 10,),
 
