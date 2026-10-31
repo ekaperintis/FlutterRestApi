@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'page_dashboard.dart';
+import 'page_edit.dart';
 
 class PageViewUser extends StatefulWidget{
   const PageViewUser({super.key});
@@ -39,6 +40,39 @@ class _PageViewUserState extends State<PageViewUser>{
 
   }
 
+  // Fungsi DELETE Data
+  Future<void> hapusUser(int idUser) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString("token") ?? "";
+
+    try {
+      final response = await http.delete(
+        Uri.parse('http://127.0.0.1:3000/user/$idUser'),
+        headers: {
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        // Refresh UI agar data yang terhapus hilang dari layar
+        setState(() {});
+
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('User berhasil dihapus')),
+        );
+      } else {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Gagal menghapus user'), backgroundColor: Colors.red),
+        );
+      }
+    } catch (e) {
+      debugPrint("Error: $e");
+    }
+  }
+
   @override
   Widget build (BuildContext context){
     return Scaffold(
@@ -73,6 +107,36 @@ class _PageViewUserState extends State<PageViewUser>{
                   ),
                   title: Text(user['name'] ?? '-'),
                   subtitle: Text(user['email'] ?? '-'),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      // Tombol Edit
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.blue),
+                        onPressed: () async {
+                          // Pindah ke halaman edit dan tunggu hasilnya
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => PageEditUser(userData: user),
+                            ),
+                          );
+
+                          // Jika kembali membawa nilai true, refresh halaman list-nya
+                          if (result == true) {
+                            setState(() {});
+                          }
+                        },
+                      ),
+                      // Tombol Hapus (yang sebelumnya sudah dibuat)
+                      IconButton(
+                        icon: const Icon(Icons.delete, color: Colors.red),
+                        onPressed: () {
+                          hapusUser(user['id']);
+                        },
+                      ),
+                    ],
+                  ),
                 );
               }
           );
